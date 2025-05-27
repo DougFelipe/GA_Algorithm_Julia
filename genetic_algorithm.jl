@@ -3,8 +3,11 @@ module GeneticAlgorithmModule
 using ..BiomarcadorModule
 using ..FitnessModule
 using Random
+using TimerOutputs
 
-export GeneticAlgorithm, executar
+export GeneticAlgorithm, executar, executar_limpo  # <-- agora exporta também
+
+const to = TimerOutput()
 
 mutable struct GeneticAlgorithm
     dados::Vector{Biomarcador}
@@ -23,7 +26,7 @@ function gerar_populacao(ga::GeneticAlgorithm)
     return pop
 end
 
-function selecao_torneio(populacao, dados)
+function selecao_torneio(populacao::Vector{BitVector}, dados::Vector{Biomarcador})
     a = rand(populacao)
     b = rand(populacao)
     return avaliar_fitness(a, dados) > avaliar_fitness(b, dados) ? a : b
@@ -45,7 +48,59 @@ function mutacao!(cromossomo::BitVector, taxa::Float64)
     end
 end
 
+# 🔍 Microbenchmark ativo
 function executar(ga::GeneticAlgorithm)
+    @timeit to "Geração da População" begin
+        populacao = gerar_populacao(ga)
+    end
+
+    melhor_individuo = nothing
+    melhor_fitness = -Inf
+
+    for _ in 1:ga.num_generations
+        nova_populacao = BitVector[]
+        while length(nova_populacao) < ga.tamanho_populacao
+            @timeit to "Seleção por Torneio" begin
+                pai1 = selecao_torneio(populacao, ga.dados)
+                pai2 = selecao_torneio(populacao, ga.dados)
+            end
+
+            if rand() < ga.taxa_crossover
+                @timeit to "Crossover 1 Ponto" begin
+                    filho1, filho2 = crossover_1_ponto(pai1, pai2)
+                end
+            else
+                filho1 = copy(pai1)
+                filho2 = copy(pai2)
+            end
+
+            @timeit to "Mutação + Avaliação" begin
+                mutacao!(filho1, ga.taxa_mutacao)
+                mutacao!(filho2, ga.taxa_mutacao)
+
+                for filho in (filho1, filho2)
+                    push!(nova_populacao, filho)
+                    fit = avaliar_fitness(filho, ga.dados)
+                    if fit > melhor_fitness
+                        melhor_fitness = fit
+                        melhor_individuo = copy(filho)
+                    end
+                    if length(nova_populacao) == ga.tamanho_populacao
+                        break
+                    end
+                end
+            end
+        end
+        populacao = nova_populacao
+    end
+
+    println("✅ Melhor fitness encontrado: ", melhor_fitness)
+    println("📊 Microbenchmark por etapa:")
+    show(to)
+end
+
+# 🕓 Versão limpa para macrobenchmark
+function executar_limpo(ga::GeneticAlgorithm)
     populacao = gerar_populacao(ga)
     melhor_individuo = nothing
     melhor_fitness = -Inf
@@ -81,7 +136,7 @@ function executar(ga::GeneticAlgorithm)
         populacao = nova_populacao
     end
 
-    println("Melhor fitness encontrado: ", melhor_fitness)
+    return melhor_fitness
 end
 
 end
