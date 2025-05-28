@@ -1,16 +1,16 @@
 module FitnessModule
 
 using ..BiomarcadorModule
+
 export avaliar_fitness
 
-# Soma os valores dos biomarcadores selecionados (true no cromossomo)
+"""
+    avaliar_fitness(cromossomo::BitVector, dados::Vector{Biomarcador})
+
+Soma os valores de expressão tumoral dos biomarcadores ativos no cromossomo.
+"""
 function avaliar_fitness(cromossomo::BitVector, dados::Vector{Biomarcador})
-    soma = 0.0
-    for i in eachindex(cromossomo)
-        if cromossomo[i]
-            soma += dados[i].valor
-        end
-    end
+    soma = sum(b.expressao_tumoral for (b, ativo) in zip(dados, cromossomo) if ativo)
     return soma
 end
 

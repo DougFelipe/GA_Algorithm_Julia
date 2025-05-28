@@ -1,0 +1,13 @@
+Etapa
+ncalls
+Tempo total
+% do total
+Tempo médio
+Aloc total
+% aloc
+Aloc média
+Tot,/,%,measured:,144s,/,38.8%,18.0GiB,/,2.8%
+Seleção,por,Torneio,25,26.3s,47.0%,1.05s,0.00B,0.0%,0.00B
+Mutação,+,Avaliação,25,19.7s,35.2%,790ms,263MiB,51.9%,10.5MiB
+Geração,da,População,1,6.00s,10.7%,6.00s,244MiB,48.1%,244MiB
+Crossover,1,Ponto,19,3.97s,7.1%,209ms,0.00B,0.0%,0.00B

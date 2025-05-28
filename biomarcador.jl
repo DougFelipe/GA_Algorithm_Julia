@@ -2,11 +2,13 @@ module BiomarcadorModule
 
 export Biomarcador
 
-# Estrutura de dados que representa um biomarcador
+# Novo tipo com todos os campos relevantes do CSV
 struct Biomarcador
-    id::Int
-    nome::String
-    valor::Float64
+    id::String
+    expressao_tumoral::Float64
+    conservacao::Int64
+    similaridade_humana::Int64
+    localizacao::Int64
 end
 
 end

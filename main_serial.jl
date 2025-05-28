@@ -5,13 +5,17 @@
 
 using Pkg; Pkg.activate(@__DIR__)
 
+# Inclui os módulos do projeto
 include("biomarcador.jl")
 include("fitness.jl")
 include("genetic_algorithm.jl")
+include("leitura_biomarcadores.jl")
 
+# Carrega pacotes e módulos necessários
 using .BiomarcadorModule
 using .FitnessModule
 using .GeneticAlgorithmModule
+using .LeituraBiomarcadores
 using TimerOutputs
 using Dates
 using DelimitedFiles
@@ -19,35 +23,41 @@ using DelimitedFiles
 # 🔁 Resetar TimerOutput antes de iniciar a execução
 reset_timer!(GeneticAlgorithmModule.to)
 
-# 🧬 Geração de dados simulados
-dados = [Biomarcador(i, "bio$i", rand() * 100) for i in 1:100]
+# 📂 Carrega o dataset real
+path = "biomarcadores_1gb.txt"
+dados = carregar_biomarcadores(path)
+
+# 🧬 Instancia o algoritmo genético
 ga = GeneticAlgorithm(dados, 50, 100, 0.8, 0.01)
 
-# ▶️ Executa o algoritmo com medição por etapa
+# ▶️ Executa com microbenchmark integrado
 executar(ga)
 
-# 📥 Exportar microbenchmark para CSV
+# 📥 Exporta microbenchmark para CSV
 
-# Captura a saída formatada como texto
+# Captura a saída do TimerOutput como texto
 buffer = IOBuffer()
 TimerOutputs.print_timer(buffer, GeneticAlgorithmModule.to)
 
-# Converte para texto e quebra em linhas
+# Processa a string e extrai linhas de dados
 output_text = String(take!(buffer))
 lines = split(output_text, '\n')
-
-# Filtra apenas linhas com dados reais
 dados_lidos = filter(l -> count(isspace, l) > 5 && occursin(r"\d", l), lines)
 
-# Cabeçalho do CSV
+# Monta CSV
 header = ["Etapa", "ncalls", "Tempo total", "% do total", "Tempo médio", "Aloc total", "% aloc", "Aloc média"]
 conteudo = [split(strip(l)) for l in dados_lidos]
 
-# Timestamp e nome do arquivo
-timestamp = Dates.format(now(), "yyyymmdd_HHMMSS")
-filename = "versao_serial_micro_$timestamp.csv"
+# 🔖 Nome do script atual (sem extensão)
+script_name = "main_serial"
 
-# Salva arquivo CSV
+# 🕒 Timestamp
+timestamp = Dates.format(now(), "yyyymmdd_HHMMSS")
+
+# 📄 Nome final do arquivo
+filename = "$(script_name)_micro_$timestamp.csv"
+
+# 💾 Salva CSV
 writedlm(filename, [header; conteudo], ',')
 
 println("📥 Microbenchmark salvo como: $filename")
