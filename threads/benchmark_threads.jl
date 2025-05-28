@@ -16,7 +16,7 @@ using DelimitedFiles
 
 # 📂 Caminho local atualizado
 path = "biomarcadores_1gb.txt"
-dados = carregar_biomarcadores(path)
+dados = LeituraBiomarcadores.carregar_biomarcadores(path)
 ga = GeneticAlgorithm(dados, 50, 100, 0.8, 0.01)
 
 println("⏱️ Executando benchmark paralelo...")
