@@ -1,0 +1,10 @@
+Etapa
+ncalls
+Tempo total
+% do total
+Tempo médio
+Aloc total
+% aloc
+Aloc média
+Tot,/,%,measured:,146s,/,1.6%,20.9GiB,/,1.1%
+Geração,da,População,1,2.34s,100.0%,2.34s,245MiB,100.0%,245MiB

@@ -10,7 +10,8 @@ function carregar_biomarcadores(path::String)
         error("❌ Arquivo '$path' não encontrado.")
     end
 
-    local df  # <== Define o df aqui no escopo externo
+    df = nothing  # Garantir visibilidade da variável
+    dados = nothing
 
     try
         df = CSV.File(path; delim=';', header=1, ignorerepeated=true) |> DataFrame

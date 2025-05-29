@@ -28,7 +28,7 @@ path = "biomarcadores_1gb.txt"
 dados = carregar_biomarcadores(path)
 
 # 🧬 Instancia o algoritmo genético
-ga = GeneticAlgorithm(dados, 50, 100, 0.8, 0.01)
+ga = GeneticAlgorithm(dados, 50, 1, 0.8, 0.01)
 
 # ▶️ Executa com microbenchmark integrado
 executar(ga)
