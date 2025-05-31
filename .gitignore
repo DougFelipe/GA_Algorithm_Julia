@@ -1,2 +1,6 @@
 /statprof
 biomarcadores_1gb.txt
+
+/threads/gc_profile_threads.jl
+/threads/inspect_gc.jl
+/threads/test_gc.jl
